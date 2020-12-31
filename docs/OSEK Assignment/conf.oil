@@ -1,0 +1,68 @@
+OIL_VERSION = "2.5" : "test" ;
+
+CPU test {    
+	OS config {
+		STATUS = STANDARD;
+		BUILD = TRUE {
+			TRAMPOLINE_BASE_PATH = "../../trampoline";
+			APP_NAME = "MorseTwitter";
+			APP_SRC = "src/code.cpp";
+			APP_SRC = "src/task.cpp";
+			APP_SRC = "src/comm_fnct.cpp";
+			APP_SRC = "src/callback.cpp";
+			CPPCOMPILER = "avr-g++";
+			COMPILER = "avr-gcc";
+			LINKER = "avr-gcc";
+			ASSEMBLER = "avr-gcc";
+			COPIER = "avr-objcopy";
+			SYSTEM = PYTHON;
+
+			//CFLAGS = "-D DEBUG"; // Uncomment this line if you want to read debug info from serial port
+
+			//LIBRARY = serial;    // Uncomment this line if you want to read debug info from serial port
+		};
+
+		SYSTEM_CALL = TRUE;
+	};
+
+  	APPMODE stdAppmode {};
+
+	EVENT EVTGeneralOneShot {
+		MASK = 0x01;
+	};
+
+	TASK TaskTwitterer {
+		PRIORITY = 0x1;
+	    AUTOSTART = TRUE {
+			APPMODE = stdAppmode;
+		};
+		SCHEDULE = NON;
+		ACTIVATION = 1;
+		STACKSIZE = 80;
+		EVENT = EVTGeneralOneShot;
+	};
+
+	COUNTER SystemCounter {
+		MINCYCLE = 1;
+		MAXALLOWEDVALUE = 0xffffff;
+		TICKSPERBASE = 1;
+	};
+	
+	ALARM ALARMGeneralOneShot {
+		COUNTER = SystemCounter;
+		AUTOSTART = FALSE;
+		ACTION = SETEVENT {
+			TASK = TaskTwitterer;
+			EVENT = EVTGeneralOneShot;
+		};
+	};
+
+	ALARM ALARMStopDisplay {
+		COUNTER = SystemCounter;
+		AUTOSTART = FALSE;
+		ACTION = ALARMCALLBACK {
+    		ALARMCALLBACKNAME = "ALARMStopDisplay";
+  		};
+	};
+
+};
