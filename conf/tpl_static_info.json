@@ -1,0 +1,94 @@
+
+{
+  "alarm" : 
+  [
+    
+    {
+      "ACTION" : "SETEVENT",
+      "ACTION_S" : 
+      {
+        "EVENT" : "EVTGeneralOneShot",
+        "TASK" : "TaskTwitterer"
+      },
+      "AUTOSTART" : "false",
+      "COUNTER" : "SystemCounter",
+      "NAME" : "ALARMGeneralOneShot"
+    },    
+    {
+      "ACTION" : "ALARMCALLBACK",
+      "ACTION_S" : 
+      {
+        "ALARMCALLBACKNAME" : "ALARMStopDisplay"
+      },
+      "AUTOSTART" : "false",
+      "COUNTER" : "SystemCounter",
+      "NAME" : "ALARMStopDisplay"
+    }
+  ],
+  "event" : 
+  [
+    
+    {
+      "MASK" : 1,
+      "NAME" : "EVTGeneralOneShot"
+    }
+  ],
+  "isr" : [],
+  "resource" : 
+  [
+    
+    {
+      "ISRUSAGE" : [],
+      "KIND" : "Resource",
+      "NAME" : "INTERNAL_RES_SCHEDULER",
+      "PRIORITY" : 2,
+      "RESOURCEPROPERTY" : "INTERNAL",
+      "TASKUSAGE" : 
+      [
+        
+        {
+          "VALUE" : "TaskTwitterer"
+        }
+      ]
+    }
+  ],
+  "task" : 
+  [
+    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "stdAppmode"
+          }
+        ]
+      },
+      "EVENT" : 
+      [
+        
+        {
+          "VALUE" : "EVTGeneralOneShot"
+        }
+      ],
+      "KIND" : "Task",
+      "NAME" : "TaskTwitterer",
+      "NONPREEMPTABLE" : "true",
+      "PRIORITY" : 1,
+      "RESOURCE" : 
+      [
+        
+        {
+          "VALUE" : "INTERNAL_RES_SCHEDULER"
+        }
+      ],
+      "SCHEDULE" : "NON",
+      "STACKSIZE" : 80,
+      "USEINTERNALRESOURCE" : "false"
+    }
+  ]
+}

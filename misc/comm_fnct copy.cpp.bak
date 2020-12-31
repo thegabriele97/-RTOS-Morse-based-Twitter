@@ -1,0 +1,58 @@
+#include "stdint.h"
+#include "Arduino.h"
+#include "tpl_os.h"
+#include "comm_fnct.h"
+
+#define MORSEBUFF2_UINT32_PTR(buff_ptr) ((uint32_t *)buff_ptr)
+#define MORSEENCODING2_UINT32(one, two, three, four) ((uint32_t)(((uint32_t)one << 24) | ((uint32_t)two << 16) | ((uint32_t)three << 8) | ((uint32_t)four << 0)))
+#define MORSEENCODING2_UINT32_INV(one, two, three, four) ((uint32_t)(((uint32_t)four << 24) | ((uint32_t)three << 16) | ((uint32_t)two << 8) | ((uint32_t)one << 0)))
+
+static const morse_t morse_encoding[][4] = {
+    { DOT,  DASH, NILL, NILL }, // A
+    { DASH, DOT,  DOT,  DOT  }, // B
+    { DASH, DOT,  DASH, DOT  }, // C
+    { DASH, DOT,  DOT,  NILL }, // D
+    { DOT,  NILL, NILL, NILL }, // E
+    { DOT,  DOT,  DASH, DOT  }, // F
+    { DASH, DASH, DOT,  NILL }, // G
+    { DOT,  DOT,  DOT,  DOT  }, // H
+    { DOT,  DOT,  NILL, NILL }, // I
+    { DOT,  DASH, DASH, DASH }, // J
+    { DASH, DOT,  DASH, NILL }, // K
+    { DOT,  DASH, DOT,  DOT  }, // L
+    { DASH, DASH, NILL, NILL }, // M
+    { DASH, DOT,  NILL, NILL }, // N
+    { DASH, DASH, DASH, NILL }, // O
+    { DOT,  DASH, DASH, DOT  }, // P
+    { DASH, DASH, DOT,  DASH }, // Q
+    { DOT,  DASH, DOT,  NILL }, // R
+    { DOT,  DOT,  DOT,  NILL }, // S
+    { DASH, NILL, NILL, NILL }, // T
+    { DASH, NILL, NILL, NILL }, // U
+    { DOT,  DOT,  DASH, NILL }, // V
+    { DOT,  DOT,  DOT,  DASH }, // W
+    { DOT,  DASH, DASH, NILL }, // X
+    { DASH, DOT,  DASH, DASH }, // Y
+    { DASH, DASH, DOT,  DOT  }  // Z
+};
+
+void send_multiple_bits(uint8_t bits, uint8_t pin, uint8_t times) {
+
+    while(times--) {
+        send_bits(bits, pin);
+    }
+}
+
+void send_bits(uint8_t bits, uint8_t pin) {
+
+    do {
+        digitalWrite(pin, bits & 0x01);
+
+        WaitEvent(EVTBitTiming);
+        ClearEvent(EVTBitTiming);
+    } while (bits >>= 1);
+}
+
+void char2morse(char ch, morse_t *buffer) {
+    buffer = (morse_t *)morse_encoding[(((uint8_t)ch) & 0x1f) - 1];
+}
